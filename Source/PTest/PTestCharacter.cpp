@@ -48,27 +48,6 @@ APTestCharacter::APTestCharacter()
 
 }
 
-void APTestCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-	//this to test spawn at the begining
-	if (SmokeGrenadeClass)
-	{
-		//FVector Location = GetActorLocation() + GetActorForwardVector() * 200.0f;
-		//GetWorld()->SpawnActor<ASmokeGrenade>(SmokeGrenadeClass, Location, FRotator::ZeroRotator);
-		/*FVector SpawnLocation = Instigator->GetActorLocation() +
-			Instigator->GetActorForwardVector() * 200.0f +
-			FVector(0.0f, 0.0f, 50.0f); // Raise by 50 units*/
-		UE_LOG(LogTemp, Warning, TEXT("Test spawn of Smoke Grenade in BeginPlay."));
-
-
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("SmokeGrenadeClass is NULL!"));
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////// Input
 
@@ -88,8 +67,8 @@ void APTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APTestCharacter::Look);
 	
 		// Bind the actions to the corresponding functions
-		PlayerInputComponent->BindAction("FireAction", IE_Pressed, this, &APTestCharacter::FireObject);
-		PlayerInputComponent->BindAction("PickUpAction", IE_Pressed, this, &APTestCharacter::PickupObject);
+		//PlayerInputComponent->BindAction("FireAction", IE_Pressed, this, &APTestCharacter::FireObject);
+		//PlayerInputComponent->BindAction("PickUpAction", IE_Pressed, this, &APTestCharacter::PickupObject);
 		PlayerInputComponent->BindAction("UseDash", IE_Pressed, this, &APTestCharacter::UseDash);
 		PlayerInputComponent->BindAction("ThrowSmokeGrenade", IE_Pressed, this, &APTestCharacter::ThrowSmokeGrenade);
 
@@ -126,90 +105,11 @@ void APTestCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-void APTestCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
-	if (HeldObject)
-	{
 
-		FVector TargetLocation = GetFirstPersonCameraComponent()->GetComponentLocation() + (GetFirstPersonCameraComponent()->GetForwardVector() * HoldDistance)
-			+ FVector(0.0f, 0.0f, HoldHeightOffset);
 
-		// Move the object smoothly to the target location
-		FVector CurrentLocation = HeldObject->GetActorLocation();
-		FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetLocation, DeltaTime, 10.0f);
 
-		HeldObject->SetActorLocation(NewLocation);
-	}
-}
 
-void APTestCharacter::PickupObject()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, TEXT("pickup object"));
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
-
-	FVector End = CameraLocation + (CameraRotation.Vector() * PickupRadius);
-
-	FHitResult Hit;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, CameraLocation, End, ECC_PhysicsBody, Params);
-	/*FColor LineColor = bHit ? FColor::Green : FColor::Red;
-	DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 1.0f, 0, 2.0f);*/
-
-	if (bHit)
-	{
-		HeldObject = Hit.GetActor();
-		if (HeldObject)
-		{
-			UPrimitiveComponent* MeshComp = Cast<UPrimitiveComponent>(HeldObject->GetRootComponent());
-			if (MeshComp)
-			{
-				// Disable physics simulation when holding the object
-				MeshComp->SetSimulatePhysics(false);
-				UE_LOG(LogTemp, Warning, TEXT("Picked up : %s"), *HeldObject->GetName());
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("No valid object found in line trace!"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Line trace did not hit any object!"));
-	}
-}
-
-void APTestCharacter::FireObject()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Emerald, TEXT("fire object"));
-	if (HeldObject)
-	{
-		FVector FireDirection = GetActorForwardVector();
-		UPrimitiveComponent* ObjectRootComponent = Cast<UPrimitiveComponent>(HeldObject->GetRootComponent());
-		if (ObjectRootComponent)
-		{
-			// Re-enable physics simulation
-			ObjectRootComponent->SetSimulatePhysics(true);
-			ObjectRootComponent->AddImpulse(FireDirection * FireForce, NAME_None, true);
-			UE_LOG(LogTemp, Warning, TEXT("Fired: %s"), *HeldObject->GetName());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Root component is not a UPrimitiveComponent!"));
-		}
-		HeldObject = nullptr;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No object held to fire!"));
-	}
-}
 
 void APTestCharacter::UseDash()
 {

@@ -23,8 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Mesh;
+
 
 	UPROPERTY(EditAnywhere)
 	float SmokeDuration = 5.0f;

@@ -8,10 +8,7 @@ ASmokeGrenade::ASmokeGrenade()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
-
+	SetLifeSpan(20.0f);  // Keeps the grenade alive for 5 seconds
 }
 
 // Called when the game starts or when spawned
@@ -19,7 +16,7 @@ void ASmokeGrenade::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ASmokeGrenade::OnSmokeEnd);
+	//GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ASmokeGrenade::OnSmokeEnd);
 
 }
 void ASmokeGrenade::OnSmokeEnd()

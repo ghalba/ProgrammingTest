@@ -20,6 +20,5 @@ public:
 	// Override ActivateAbility to spawn smoke grenade
 	virtual void ActivateAbility(AActor* Instigator) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SmokeGrenade")
-	TSubclassOf<AActor> SmokeGrenadeClass;
+
 };

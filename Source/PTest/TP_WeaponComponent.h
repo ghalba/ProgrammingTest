@@ -34,9 +34,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* FireMappingContext;
 
-	/** Fire Input Action */
+	/** Pickup Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* PickupAction;
+
+	/** Fire Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
+
+	UFUNCTION(BlueprintCallable, Category = "GravityGun")
+	void PickupObject();
+
+	UFUNCTION(BlueprintCallable, Category = "GravityGun")
+	void FireObject();
 
 	/** Sets default values for this component's properties */
 	UTP_WeaponComponent();
@@ -49,12 +59,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GravityGun", meta = (ClampMin = "0.0", ClampMax = "1000.0", UIMin = "0.0", UIMax = "1000.0"))
+	float PickupRadius = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GravityGun")
+	float FireForce = 1000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GravityGun")
+	float HoldDistance = 200.0f;  // Distance in front of the player
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GravityGun")
+	float HoldHeightOffset = 100.0f;  // Height offset above the player
+
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
 	/** The Character holding this weapon*/
 	APTestCharacter* Character;
+
+	AActor* HeldObject = nullptr;
 };

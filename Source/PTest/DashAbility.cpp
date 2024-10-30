@@ -7,7 +7,7 @@
 UDashAbility::UDashAbility()
 {
 	AbilityName = "Dash";
-	CooldownTime = 5.0f;  // 5 seconds cooldown
+
 }
 
 void UDashAbility::ActivateAbility(AActor* Instigator)
