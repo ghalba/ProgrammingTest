@@ -1,0 +1,19 @@
+# Compiled binary files
+Binaries/*
+Intermediate/*
+Saved/*
+DerivedDataCache/*
+
+# Build directory
+Build/*
+
+# User-specific files
+*.sln
+*.suo
+*.user
+*.userprefs
+
+# Ignore Visual Studio files
+.vs/
+*.VC.db
+*.ipch
