@@ -15,23 +15,47 @@ void UAbilityBase::ActivateAbility(AActor* Instigator)
 		UE_LOG(LogTemp, Warning, TEXT("Ability on cooldown. Try again later."));
 		return;
 	}
-	// Store the activation time
+
 	LastActivatedTime = CurrentTime;	
 
 	UE_LOG(LogTemp, Log, TEXT("%s activated!"), *AbilityName);
+
+    USceneComponent* ThrowPoint = Instigator->FindComponentByClass<USceneComponent>();
+    if (!ThrowPoint)
+    {
+        UE_LOG(LogTemp, Error, TEXT("No valid Throw Point found on the Instigator!"));
+        return;
+    }
+    // Use ThrowPoint's location and rotation for spawning
+    FVector SpawnLocation = ThrowPoint->GetComponentLocation();
+    FRotator SpawnRotation = ThrowPoint->GetComponentRotation();
+
     // Spawn the actor if a valid class is assigned
     if (SpawnClass!= nullptr)
     {
-        FVector SpawnLocation = Instigator->GetActorLocation() + Instigator->GetActorForwardVector() * 200.0f;
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = Instigator;
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        UE_LOG(LogTemp, Log, TEXT("%s activated!"), *SpawnLocation.ToString());
 
         AActor* SpawnedActor = Instigator->GetWorld()->SpawnActor<AActor>(SpawnClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 
         if (SpawnedActor)
         {
+            UPrimitiveComponent* RootComponent = Cast<UPrimitiveComponent>(SpawnedActor->GetRootComponent());
+            if (RootComponent)
+            {
+                if (!RootComponent->IsSimulatingPhysics())
+                {
+                    RootComponent->SetSimulatePhysics(true);  // Enable physics if it's not enabled
+                }
+                // Check if the root component can simulate physics
+            
+                if (RootComponent && RootComponent->IsSimulatingPhysics())
+                {
+                    FVector ThrowDirection = Instigator->GetActorForwardVector() + FVector(0, 0, 0.5f);
+                    RootComponent->AddImpulse(ThrowDirection * ThrowForce, NAME_None, true);
+                }
+            }
             UE_LOG(LogTemp, Warning, TEXT("Actor spawned successfully!"));
         }
         else

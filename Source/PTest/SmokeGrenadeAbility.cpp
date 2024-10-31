@@ -15,7 +15,7 @@ void USmokeGrenadeAbility::ActivateAbility(AActor* Instigator)
 {
 	
 	Super::ActivateAbility(Instigator);  // Check cooldown
-	UE_LOG(LogTemp, Warning, TEXT("Activating Smoke Grenade!"));
+	//UE_LOG(LogTemp, Warning, TEXT("Activating Smoke Grenade!"));
 	
 	
 }

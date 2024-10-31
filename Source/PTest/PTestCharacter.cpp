@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "Components/SpotLightComponent.h"
 #include "DashAbility.h"
 #include "SmokeGrenadeAbility.h"
 
@@ -46,8 +47,14 @@ APTestCharacter::APTestCharacter()
 	// Set up the Smoke Grenade ability
 	SmokeGrenadeAbility = CreateDefaultSubobject<USmokeGrenadeAbility>(TEXT("SmokeGrenadeAbility"));
 
-}
+	
+	LightComponent = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLight"));
+	LightComponent->SetupAttachment(RootComponent);  // Attach to the root component
+	LightComponent->SetIntensity(LightIntensity);
+	LightComponent->SetAttenuationRadius(LightRadius);
+	LightComponent->SetVisibility(false); // Initially, the light is off
 
+}
 
 //////////////////////////////////////////////////////////////////////////// Input
 
@@ -65,12 +72,16 @@ void APTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APTestCharacter::Look);
-	
+		EnhancedInputComponent->BindAction(LightAction, ETriggerEvent::Triggered, this, &APTestCharacter::ToggleLight);
+
+
 		// Bind the actions to the corresponding functions
 		//PlayerInputComponent->BindAction("FireAction", IE_Pressed, this, &APTestCharacter::FireObject);
 		//PlayerInputComponent->BindAction("PickUpAction", IE_Pressed, this, &APTestCharacter::PickupObject);
 		PlayerInputComponent->BindAction("UseDash", IE_Pressed, this, &APTestCharacter::UseDash);
 		PlayerInputComponent->BindAction("ThrowSmokeGrenade", IE_Pressed, this, &APTestCharacter::ThrowSmokeGrenade);
+		// Bind the input action for toggling light
+		PlayerInputComponent->BindAction("LightAction", IE_Pressed, this, &APTestCharacter::ToggleLight);
 
 	}
 	else
@@ -125,5 +136,25 @@ void APTestCharacter::ThrowSmokeGrenade()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, TEXT("throwSmokeGrenade"));
 		SmokeGrenadeAbility->ActivateAbility(this);
+	}
+}
+
+void APTestCharacter::ToggleLight()
+{
+	UE_LOG(LogTemp, Log, TEXT("ToggleLight activated."));
+	if (LightComponent)
+	{
+		bIsLightActive = !bIsLightActive;  // Toggle the state
+
+		if (bIsLightActive)
+		{
+			LightComponent->SetVisibility(true);  // Turn on the light
+			UE_LOG(LogTemp, Log, TEXT("Light activated with intensity: %f"), LightIntensity);
+		}
+		else
+		{
+			LightComponent->SetVisibility(false);  // Turn off the light
+			UE_LOG(LogTemp, Log, TEXT("Light deactivated."));
+		}
 	}
 }

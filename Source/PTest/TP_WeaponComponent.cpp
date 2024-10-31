@@ -226,7 +226,7 @@ bool UTP_WeaponComponent::AttachWeapon(APTestCharacter* TargetCharacter)
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			// pickupObject
-			EnhancedInputComponent->BindAction(PickupAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::PickupObject);
+			EnhancedInputComponent->BindAction(PickUpAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::PickupObject);
 			// FireObject
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UTP_WeaponComponent::FireObject);
 		}

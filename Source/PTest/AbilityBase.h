@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Spawning")
 	TSubclassOf<AActor> SpawnClass;  // Class of the actor to spawn
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Abilities|Spawning")
+	float ThrowForce = 1000.f;
 	
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual void ActivateAbility(AActor* Instigator);

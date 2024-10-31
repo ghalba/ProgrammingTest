@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "AbilityBase.h"
 #include "SmokeGrenade.h"
+#include "Components/SpotLightComponent.h"
 #include "PTestCharacter.generated.h"
 
 class UInputComponent;
@@ -38,6 +39,9 @@ class APTestCharacter : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* LightAction;
 	
 public:
 	APTestCharacter();
@@ -55,9 +59,28 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	UAbilityBase* SmokeGrenadeAbility;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities|Light", meta = (AllowPrivateAccess = "true"))
+	UPointLightComponent* LightComponent;  // Light component for the ability
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Light")
+	float LightIntensity = 3000.0f;  // Intensity of the light
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Light")
+	float LightRadius = 500.0f;  // Radius of the light
+
+
 	
 	void UseDash();
-	void ThrowSmokeGrenade();		
+	void ThrowSmokeGrenade();	
+
+	// Function to activate the light
+	void ToggleLight();
+private:
+	bool bIsLightActive = false;
+
 
 protected:
 
@@ -66,6 +89,8 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
