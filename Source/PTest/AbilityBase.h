@@ -14,40 +14,26 @@ class PTEST_API UAbilityBase : public UObject
 {
 	GENERATED_BODY()
 public:
-	// Ability name for debugging or UI
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	FString AbilityName;
 
-	// Damage value (if applicable)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
-	float Damage;
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Cooldown")
 	float CooldownDuration = 5.0f;  // Cooldown time in seconds
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities|Spawning")
-	TSubclassOf<AActor> SpawnClass;  // Class of the actor to spawn
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Abilities|Spawning")
-	float ThrowForce = 1000.f;
 	
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual void ActivateAbility(AActor* Instigator);
 
-	float LastActivatedTime = -9999.0f;  // Stores the last activation timestamp
 
-
-private:
-
-	
-
-	
 protected:
 	
 
+	bool IsOnCooldown() const;
+	void StartCooldown();
 	// Internal function to reset the cooldown flag
 	void ResetCooldown();
+	float LastActivatedTime = -9999.0f;  // Stores the last activation timestamp
+	FTimerHandle CooldownTimerHandle;
 
 	
 };

@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "AbilityBase.h"
+#include "DashAbility.h"
+#include "SmokeGrenadeAbility.h"
 #include "SmokeGrenade.h"
 #include "Components/SpotLightComponent.h"
 #include "PTestCharacter.generated.h"
@@ -55,10 +56,10 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
-	UAbilityBase* DashAbility;
+	UDashAbility* DashAbility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
-	UAbilityBase* SmokeGrenadeAbility;
+	USmokeGrenadeAbility* SmokeGrenadeAbility;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities|Light", meta = (AllowPrivateAccess = "true"))
 	UPointLightComponent* LightComponent;  // Light component for the ability

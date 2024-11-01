@@ -5,73 +5,35 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 
+
 void UAbilityBase::ActivateAbility(AActor* Instigator)
 {
-	float CurrentTime = GetWorld()->GetTimeSeconds();
-
-	// Check if cooldown is still active
-	if (CurrentTime - LastActivatedTime < CooldownDuration)
+	if (IsOnCooldown())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ability on cooldown. Try again later."));
+		UE_LOG(LogTemp, Warning, TEXT("Ability is on cooldown."));
 		return;
 	}
+	LastActivatedTime = GetWorld()->GetTimeSeconds();
+	UE_LOG(LogTemp, Log, TEXT("Ability %s activated."), *GetName());
 
-	LastActivatedTime = CurrentTime;	
+	// Trigger the cooldown reset
+	StartCooldown();
+}
 
-	UE_LOG(LogTemp, Log, TEXT("%s activated!"), *AbilityName);
-
-    USceneComponent* ThrowPoint = Instigator->FindComponentByClass<USceneComponent>();
-    if (!ThrowPoint)
-    {
-        UE_LOG(LogTemp, Error, TEXT("No valid Throw Point found on the Instigator!"));
-        return;
-    }
-    // Use ThrowPoint's location and rotation for spawning
-    FVector SpawnLocation = ThrowPoint->GetComponentLocation();
-    FRotator SpawnRotation = ThrowPoint->GetComponentRotation();
-
-    // Spawn the actor if a valid class is assigned
-    if (SpawnClass!= nullptr)
-    {
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.Owner = Instigator;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-        AActor* SpawnedActor = Instigator->GetWorld()->SpawnActor<AActor>(SpawnClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-
-        if (SpawnedActor)
-        {
-            UPrimitiveComponent* RootComponent = Cast<UPrimitiveComponent>(SpawnedActor->GetRootComponent());
-            if (RootComponent)
-            {
-                if (!RootComponent->IsSimulatingPhysics())
-                {
-                    RootComponent->SetSimulatePhysics(true);  // Enable physics if it's not enabled
-                }
-                // Check if the root component can simulate physics
-            
-                if (RootComponent && RootComponent->IsSimulatingPhysics())
-                {
-                    FVector ThrowDirection = Instigator->GetActorForwardVector() + FVector(0, 0, 0.5f);
-                    RootComponent->AddImpulse(ThrowDirection * ThrowForce, NAME_None, true);
-                }
-            }
-            UE_LOG(LogTemp, Warning, TEXT("Actor spawned successfully!"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("Failed to spawn actor."));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("SpawnClass is NULL! Please assign it in the Editor."));
-    }
-	
+void UAbilityBase::StartCooldown()
+{
+	if (CooldownDuration > 0.0f)
+	{
+		GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, this, &UAbilityBase::ResetCooldown, CooldownDuration, false);
+	}
 }
 
 void UAbilityBase::ResetCooldown()
 {
-
-	UE_LOG(LogTemp, Log, TEXT("%s is ready!"), *AbilityName);
+	UE_LOG(LogTemp, Log, TEXT("Ability %s cooldown reset."), *GetName());
+}
+bool UAbilityBase::IsOnCooldown() const
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	return (CurrentTime - LastActivatedTime) < CooldownDuration;
 }

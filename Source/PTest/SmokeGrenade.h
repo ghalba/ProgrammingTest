@@ -15,20 +15,18 @@ public:
 	// Sets default values for this actor's properties
 	ASmokeGrenade();
 
+	UPROPERTY(EditDefaultsOnly, Category= "SmokeGrenade")
+	class USkeletalMeshComponent* SmokeGrenadeMesh;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-
 
 	UPROPERTY(EditAnywhere)
 	float SmokeDuration = 5.0f;
 
 	UFUNCTION()
 	void OnSmokeEnd();
+
 
 };

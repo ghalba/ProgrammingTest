@@ -6,9 +6,12 @@
 // Sets default values
 ASmokeGrenade::ASmokeGrenade()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	
 	PrimaryActorTick.bCanEverTick = true;
-	SetLifeSpan(20.0f);  // Keeps the grenade alive for 5 seconds
+	//SetLifeSpan(20.0f);  // Keeps the grenade alive for 5 seconds
+
+	SmokeGrenadeMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	RootComponent = SmokeGrenadeMesh;
 }
 
 // Called when the game starts or when spawned
@@ -19,15 +22,27 @@ void ASmokeGrenade::BeginPlay()
 	//GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ASmokeGrenade::OnSmokeEnd);
 
 }
+void ASmokeGrenade::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    //UE_LOG(LogTemp, Warning, TEXT("SmokeGrenadeMesh->IsSimulatingPhysics(): %s"), SmokeGrenadeMesh->IsSimulatingPhysics() ? TEXT("true") : TEXT("false"));
+
+   /* if (SmokeGrenadeMesh && SmokeGrenadeMesh->IsSimulatingPhysics())
+    {
+        FVector ThrowDirection = GetActorForwardVector() + FVector(0, 0, 0.5f);
+        FVector InitialImpulse = ThrowDirection * 1000.0f; // Adjust as needed
+
+        SmokeGrenadeMesh->AddImpulse(InitialImpulse, NAME_None, true);
+
+        UE_LOG(LogTemp, Warning, TEXT("Tick applying impulse: %s"), *InitialImpulse.ToString());
+
+
+    }*/
+}
 void ASmokeGrenade::OnSmokeEnd()
 {
 	Destroy();
 }
 
-// Called every frame
-void ASmokeGrenade::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
-}
 
